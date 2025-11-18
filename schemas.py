@@ -11,10 +11,10 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, List
 
-# Example schemas (replace with your own):
+# Example schemas (kept for reference)
 
 class User(BaseModel):
     """
@@ -38,11 +38,47 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# National Museum of Sciences of Hungary schemas
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Exhibit(BaseModel):
+    """
+    Exhibits on display at the museum
+    Collection name: "exhibit"
+    """
+    title: str = Field(..., description="Exhibit title")
+    summary: str = Field(..., description="Short description")
+    image_url: Optional[str] = Field(None, description="Cover image URL")
+    tags: List[str] = Field(default_factory=list, description="Topics/tags")
+    location: Optional[str] = Field(None, description="Gallery or floor")
+    featured: bool = Field(False, description="Featured on homepage")
+
+class Event(BaseModel):
+    """
+    Events, talks, and workshops
+    Collection name: "event"
+    """
+    name: str
+    date: str = Field(..., description="ISO date string (YYYY-MM-DD)")
+    time: Optional[str] = Field(None, description="Start time")
+    description: str
+    image_url: Optional[str] = None
+    ticket_required: bool = Field(True)
+
+class NewsletterSubscription(BaseModel):
+    """
+    Newsletter sign-ups
+    Collection name: "newslettersubscription"
+    """
+    email: EmailStr
+    name: Optional[str] = None
+    consent: bool = Field(True, description="User consent to receive emails")
+
+class ContactMessage(BaseModel):
+    """
+    Visitor contact messages
+    Collection name: "contactmessage"
+    """
+    name: str
+    email: EmailStr
+    subject: str
+    message: str
